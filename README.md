@@ -2,6 +2,11 @@
  
 > A new [cnodejs.org](http://cnodejs.org) mobile app powered by [React-Native](http://facebook.github.io/react-native/) and [Redux](https://github.com/gaearon/redux). 
 
+***Now it support android and ios, but it have many bugs.***
+
+## Install
+
+* android(v1.0.0-alpha2): https://www.pgyer.com/pEFf
 
 ## Develop
 
@@ -10,8 +15,10 @@ For local development you need to follow the below commands:
 ```
 git clone https://github.com/soliury/noder-react-native.git
 npm install
-react-native bundle
 ```
+
+Before you start run app, you should create a clone of  the `/src/testKey_example.js`, and rename to `/src/testKey.js` to put your secret key. You can go to http://cnodejs.org/setting to get your secret key.
+
 
 Click the run button in Xcode, if something went wrong, you need to rebuild all packages that be used in this project with Xcode (Just select the package and press **command+B** to run compile).
 
@@ -40,12 +47,12 @@ The ip will be replaced automatically.
 ## React-Native Modules In Using
 
 * [react-native-button](https://github.com/ide/react-native-button)
+* [react-native-barcodescanner](https://github.com/ideacreation/react-native-barcodescanner)
+* [react-native-blur](https://github.com/react-native-fellowship/react-native-blur)
 * [react-native-camera](https://github.com/lwansbrough/react-native-camera)
-* [react-native-icons](https://github.com/corymsmith/react-native-icons)
-* [react-native-keyboardevents](https://github.com/johanneslumpe/react-native-keyboardevents)
-* [react-native-modal](https://github.com/brentvatne/react-native-modal)
-* [react-native-overlay](https://github.com/brentvatne/react-native-overlay)
+* [react-native-html-render](https://github.com/soliury/react-native-html-render)
 * [react-native-scrollable-tab-view](https://github.com/brentvatne/react-native-scrollable-tab-view)
+* [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons)
 
 This project is heavily influenced by the above modules.
 
