@@ -15,7 +15,7 @@ export const storage = {
 
 
 	clear: function () {
-		return Storage.removeItem('messages');
+		return storageService.removeItem('messages');
 	}
 };
 
@@ -28,8 +28,7 @@ export const req = {
 			.then((data)=>data.data)
 			.then((messages)=> {
 				if (messages) {
-					storage.save(messages)
-					return messages
+					return messages;
 				}
 				else {
 					throw 'getMessagesFailed'

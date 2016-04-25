@@ -6,6 +6,7 @@ import React, {
 	Text,
 	PropTypes
 } from 'react-native';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Spinner from './base/Spinner';
 
@@ -25,6 +26,12 @@ class CommentUp extends Component {
 		disabled: false,
 		ups: []
 	};
+
+
+	constructor(props){
+		super(props);
+		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
+	}
 
 
 	_onUpPress() {
@@ -79,7 +86,11 @@ class CommentUp extends Component {
 
 					{this._renderUpIcon()}
 
-					{count == 0 ? null : (<Text style={styles.text}>{count}</Text>)}
+					{count == 0 ? null : (
+						<View style={styles.textWrapper}>
+							<Text style={styles.text}>{count}</Text>
+						</View>
+					)}
 				</View>
 			</TouchableOpacity>
 		)
@@ -88,8 +99,10 @@ class CommentUp extends Component {
 
 
 const styles = StyleSheet.create({
+	textWrapper: {
+		paddingLeft: 7
+	},
 	text: {
-		paddingLeft: 7,
 		fontSize: 12,
 		color: 'rgba(0,0,0,0.2)',
 		height: 12

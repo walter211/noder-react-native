@@ -8,10 +8,15 @@ import React,{
 
 
 class Spinner extends Component {
+	static defaultProps={
+		color: 'rgba(241,196,15, 1.0)'
+	};
+
 	render() {
 		if (Platform.OS === 'android') {
 			return (
-				<ProgressBarAndroid {...this.props}/>
+				<ProgressBarAndroid
+					{...this.props}/>
 			)
 		}
 		return (

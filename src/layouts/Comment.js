@@ -70,9 +70,11 @@ class Comment extends Component {
 
 	componentDidFocus(haveFocus) {
 		if (!haveFocus) {
-			this.setState({
-				didFocus: true
-			})
+			setTimeout(()=> {
+				this.setState({
+					didFocus: true
+				});
+			});
 		}
 	}
 
@@ -160,9 +162,16 @@ class Comment extends Component {
 		if (!user) return null;
 
 		const userImg = parseImgUrl(user.avatar_url);
+		let replyFormBorder = {};
+		if (Platform.OS === 'android') {
+			replyFormBorder = {
+				borderTopWidth: 1,
+				borderTopColor: 'rgba(0,0,0,0.08)'
+			};
+		}
 
 		return (
-			<View style={styles.replyFormWrapper}>
+			<View style={[styles.replyFormWrapper, replyFormBorder]}>
 				<View style={styles.replyUserImgWrapper}>
 					<TouchableOpacity onPress={()=>this.props.router.toUser({
 						userName: user.loginname
@@ -200,38 +209,9 @@ class Comment extends Component {
 	}
 
 
-	_renderCommentList() {
-		const {replies, reply={}, router, user, actions, topic, loadPending} = this.props;
-		if (this.state.didFocus && topic) {
-			return (
-				<CommentList
-					data={replies}
-					focusedReply={reply.id}
-					router={router}
-					user={user}
-					onReplyPress={this._onReplyPress.bind(this)}
-					onAuthorNamePress={this._onAuthorTextPress.bind(this)}
-					onPullRefresh={()=>{
-						actions.getTopicById(topic.id);
-					}}
-					actions={actions}
-					topicId={topic.id}
-					pending={loadPending}
-				/>
-			)
-		}
-
-		return (
-			<Spinner
-				size="large"
-				animating={true}
-				style={{marginTop:20,width:width}}/>
-		)
-	}
-
-
 	render() {
-		const {topic, router, id, count} = this.props;
+		const {replies, reply={}, router, user, actions, topic, loadPending, count} = this.props;
+
 		let navs = {
 			Left: {
 				text: '返回',
@@ -243,12 +223,7 @@ class Comment extends Component {
 				text: '评论 ' + count,
 				onPress: ()=> {
 					if (count > 0) {
-						this._listView.setNativeProps({
-							contentOffset: {
-								x: 0,
-								y: 0
-							}
-						})
+						this.commentList.scrollToTop();
 					}
 				}
 			}
@@ -263,7 +238,8 @@ class Comment extends Component {
 					onPress: ()=> {
 						router.toTopic({
 							topic: topic,
-							id: topic.id
+							id: topic.id,
+							from: 'comment'
 						})
 					}
 				}
@@ -280,7 +256,19 @@ class Comment extends Component {
 					  	height: this.props.user ? commentsHeight : commentsHeight + replyFormHeight
 					  }]}>
 
-					{ this._renderCommentList() }
+					<CommentList
+						ref={(view)=>this.commentList=view}
+						data={this.state.didFocus ? replies : []}
+						focusedReply={reply.id}
+						router={router}
+						user={user}
+						onReplyPress={this._onReplyPress.bind(this)}
+						onAuthorNamePress={this._onAuthorTextPress.bind(this)}
+						onPullRefresh={()=>{actions.getTopicById(topic.id)}}
+						actions={actions}
+						topicId={topic.id}
+						pending={ !this.state.didFocus || loadPending}
+					/>
 
 				</View>
 

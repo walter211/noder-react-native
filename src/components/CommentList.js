@@ -10,10 +10,12 @@ import React, {
 	TouchableOpacity,
 	RefreshControl
 } from 'react-native';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 import Icon from 'react-native-vector-icons/Ionicons';
 import moment from 'moment';
 import CommentHtml from './CommentHtml';
 import CommentUp from './CommentUp';
+import * as Constants from '../constants';
 
 import {parseImgUrl} from '../utils';
 
@@ -36,7 +38,8 @@ class CommentList extends Component {
 
 	static defaultProps = {
 		onReplyPress: ()=>null,
-		onAuthorNamePress: ()=>null
+		onAuthorNamePress: ()=>null,
+		pending: false
 	};
 
 
@@ -46,6 +49,7 @@ class CommentList extends Component {
 		this.state = {
 			ds: ds.cloneWithRows(props.data.concat([]).reverse())
 		};
+		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
 	}
 
 
@@ -60,6 +64,14 @@ class CommentList extends Component {
 
 	componentDidMount() {
 		setTimeout(() => this._scrollToReply(), 0);
+	}
+
+
+	scrollToTop() {
+		this._listView.scrollTo({
+			x: 0,
+			y: 0
+		});
 	}
 
 
@@ -196,10 +208,7 @@ class CommentList extends Component {
 						<RefreshControl
 							refreshing={this.props.pending}
 							onRefresh={this.props.onPullRefresh}
-							tintColor="rgba(241,196,15, 1)"
-							title="正在加载..."
-							colors={['#ff0000', '#00ff00', '#0000ff']}
-							progressBackgroundColor="#ffff00"
+							{...Constants.refreshControl}
 						  />
 					}
 			/>

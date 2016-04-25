@@ -10,7 +10,7 @@ export const GET_USER_FROM_STORAGE = 'GET_USER_FROM_STORAGE';
 export const UPDATE_CLIENT_USER_INFO = 'UPDATE_CLIENT_USER_INFO';
 export const LOGOUT = 'LOGOUT';
 export const GET_USER_INFO = 'GET_USER_INFO';
-
+export const CLEAR = "CLEAR";
 
 // utils
 export const TOAST = 'TOAST';
@@ -33,3 +33,8 @@ export const REMOVE_TOPIC_CACHE_BY_ID = 'REMOVE_TOPIC_CACHE_BY_ID';
 export const REPLY_TOPIC_BY_ID = 'REPLY_TOPIC_BY_ID';
 export const UP_REPLY = 'UP_REPLY';
 export const PUBLISH = 'PUBLISH';
+
+
+// middleware
+export const SYNC_REDUCER_TO_ASYNC_STORAGE = 'SYNC_REDUCER_TO_ASYNC_STORAGE';
+export const GET_REDUCER_FROM_ASYNC_STORAGE = 'GET_REDUCER_FROM_ASYNC_STORAGE';

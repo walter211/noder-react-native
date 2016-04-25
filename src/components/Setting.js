@@ -46,7 +46,9 @@ class Setting extends Component {
 
 
 	onClearPress() {
-		this.props.actions.clear();
+		const {actions} = this.props;
+		actions.clear();
+		actions.toast('缓存清除成功');
 	}
 
 

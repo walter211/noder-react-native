@@ -11,6 +11,7 @@ import React, {
 	Animated,
 	ViewPagerAndroid
 } from 'react-native';
+import PureRenderMixin from 'react-addons-pure-render-mixin';
 
 
 const {height, width} = Dimensions.get('window');
@@ -21,7 +22,8 @@ class ScrollableTabs extends Component {
 		tabs: PropTypes.array,
 		tabNavItemWidth: PropTypes.number,
 		index: PropTypes.number,
-		onPageChanged: PropTypes.func
+		onPageChanged: PropTypes.func,
+		onPageChangedAndAnimateEnd: PropTypes.func
 	};
 
 	static defaultProps = {
@@ -40,7 +42,14 @@ class ScrollableTabs extends Component {
 		this.state = {
 			x: new Animated.Value(-offset)
 		};
+		this.state.x.addListener((e)=> {
+			if (e.value % (this.space + tabNavItemWidth) == 0) {
+				let index = Math.abs(e.value / (this.space + tabNavItemWidth));
+				typeof this.props.onPageChangedAndAnimateEnd == 'function' && this.props.onPageChangedAndAnimateEnd(index);
+			}
+		});
 		this._navs = {};
+		this.shouldComponentUpdate = PureRenderMixin.shouldComponentUpdate.bind(this);
 	}
 
 
@@ -93,22 +102,28 @@ class ScrollableTabs extends Component {
 	_onMomentumScrollBegin(e) {
 		const offsetX = e.nativeEvent.contentOffset.x;
 		const page = parseInt(offsetX / width, 10);
-		this.index = page;
 		this._animateScroll(offsetX);
-		typeof this.props.onPageChanged == 'function' && this.props.onPageChanged(page);
+		if (page !== this.index) {
+			typeof this.props.onPageChanged == 'function' && this.props.onPageChanged(page);
+		}
+		this.index = page;
+	}
+
+
+	_onPageSelected(e) {
+		const {position} = e.nativeEvent;
+		this.index = position;
+		if (position == undefined) {
+			return
+		}
+		typeof this.props.onPageChanged == 'function' && this.props.onPageChanged(position);
 	}
 
 
 	_onAndroidPageScroll(e) {
 		const {offset, position} = e.nativeEvent;
 		let x = (position + offset) * width;
-		this._onScroll({
-			nativeEvent: {
-				contentOffset: {
-					x
-				}
-			}
-		});
+		this._animateScroll(x);
 	}
 
 
@@ -193,7 +208,6 @@ class ScrollableTabs extends Component {
 					showsVerticalScrollIndicator={false}
 					scrollEventThrottle={16}
 					onScroll={this._onScroll.bind(this)}
-					onScrollBeginDrag={this._onScroll.bind(this)}
 					onMomentumScrollBegin={this._onMomentumScrollBegin.bind(this)}
 					onMomentumScrollEnd={this._onMomentumScrollBegin.bind(this)}
 					keyboardDismissMode="on-drag"
@@ -209,6 +223,7 @@ class ScrollableTabs extends Component {
 				ref={(view)=>this.viewPager=view}
 				initialPage={this.index}
 				style={styles.scrollableContentAndroid}
+				onPageSelected={this._onPageSelected.bind(this)}
 				onPageScroll={ this._onAndroidPageScroll.bind(this)}>
 
 				{ this._renderChildren() }

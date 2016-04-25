@@ -2,8 +2,8 @@ import {createAction} from 'redux-actions';
 import * as types from '../constants/ActionTypes';
 import * as userService from '../services/userService';
 import * as tokenService from '../services/token';
-import * as storageService from '../services/storage';
-
+import * as topicService from '../services/topicService';
+import * as messageService from '../services/messageService';
 
 export const checkToken = createAction(types.CHECK_TOKEN, async(token)=> {
 	const userLoginInfo = await userService.req.checkToken(token);
@@ -16,10 +16,11 @@ export const checkToken = createAction(types.CHECK_TOKEN, async(token)=> {
 			};
 		});
 	tokenService.setToken(token);
-	return await userService.storage.saveUser(user);
+	return user;
 }, (token, resolved)=> {
 	return {
-		resolved: resolved
+		resolved: resolved,
+		sync: 'user'
 	}
 });
 
@@ -41,14 +42,14 @@ export const updateClientUserInfo = createAction(types.UPDATE_CLIENT_USER_INFO, 
 	return await userService.req.getUserInfo(user.secret.loginname)
 		.then(userInfo=> {
 			if (userInfo) {
-				storageService.setItem('user', {
-					...user,
-					publicInfo: userInfo
-				});
 				return userInfo;
 			}
 			throw 'getUserInfoError'
 		});
+}, ()=> {
+	return {
+		sync: 'user'
+	}
 });
 
 
@@ -62,14 +63,25 @@ export const getUserInfo = createAction(types.GET_USER_INFO, async(loginName)=> 
 		});
 }, (userName)=> {
 	return {
-		userName
+		userName,
+		sync: 'user'
 	}
 });
 
 
 export const logout = function () {
-	userService.storage.clearUser();
 	return {
-		type: types.LOGOUT
+		type: types.LOGOUT,
+		meta: {
+			sync: 'user'
+		}
+	}
+};
+
+export const clear = function () {
+	topicService.storage.removeAllTopics();
+	messageService.storage.clear();
+	return {
+		type: types.CLEAR
 	}
 };

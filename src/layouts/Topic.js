@@ -17,10 +17,10 @@ import CommentOverlay from '../components/CommentOverlay';
 import Return from '../components/base/Return';
 import Html from '../components/base/Html';
 import Spinner from '../components/base/Spinner';
-import { genColor, parseImgUrl } from '../utils';
+import {genColor, parseImgUrl} from '../utils';
 
 
-const { height, width } = Dimensions.get('window');
+const {height, width} = Dimensions.get('window');
 const topicAuthorWidth = 100;
 const authorImgHeight = 40;
 const contentPadding = 15;
@@ -37,15 +37,20 @@ class Topic extends Component {
 
 
 	componentDidMount() {
-		this.props.actions.getTopicById(this.props.id);
+		const {from, actions, id, topic} = this.props;
+		if (from !== 'comment' && topic) {
+			actions.getTopicById(id);
+		}
 	}
 
 
 	componentDidFocus(haveFocus) {
 		if (!haveFocus) {
-			this.setState({
-				didFocus: true
-			})
+			setTimeout(()=> {
+				this.setState({
+					didFocus: true
+				});
+			});
 		}
 	}
 
@@ -157,14 +162,14 @@ class Topic extends Component {
 
 
 	render() {
-		const { topic } = this.props;
+		const {topic} = this.props;
 
 		return (
 			<View style={[styles.container]}>
 				{ this._renderContent(topic) }
 
 				<Return router={this.props.router}/>
-				{ this.props.topic && this.state.didFocus && this._renderCommentOverlay(topic) }
+				{ this.props.topic && this.state.didFocus && this.props.from !== 'comment' && this._renderCommentOverlay(topic) }
 			</View>
 		)
 	}
@@ -257,7 +262,7 @@ const styles = StyleSheet.create({
 
 export const LayoutComponent = Topic;
 export function mapStateToProps(state, props) {
-	const { id = '0' } = props;
+	const {id = '0'} = props;
 	const topic = state.topic.topics[id];
 	return {
 		topic: topic || props.topic
